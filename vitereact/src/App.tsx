@@ -24,7 +24,6 @@ import UV_CancelAppointment from '@/components/views/UV_CancelAppointment';
 import UV_RescheduleAppointment from '@/components/views/UV_RescheduleAppointment';
 
 /* Fallback view for unknown routes */
-import NotFound from '@/components/views/NotFound';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -73,8 +72,7 @@ const App: React.FC = () => {
             <Route path="/reschedule_appointment" element={<UV_RescheduleAppointment />} />
             <Route path="/:username" element={<UV_PublicScheduling />} />
 
-            {/* Fallback route for unknown pages */}
-            <Route path="*" element={<NotFound />} />
+            
           </Routes>
         </main>
         
