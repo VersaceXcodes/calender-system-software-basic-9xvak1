@@ -37,9 +37,9 @@ const pool = new Pool(
 );
 
 // Setup Redis client connection for distributed locking
-const redisClient = createClient({ url: process.env.REDIS_URL });
-redisClient.on('error', (err) => console.error('Redis Client Error', err));
-await redisClient.connect();
+// const redisClient = createClient({ url: process.env.REDIS_URL });
+// redisClient.on('error', (err) => console.error('Redis Client Error', err));
+// await redisClient.connect();
 
 // Initialize Express app
 const app = express();
@@ -709,22 +709,22 @@ io.on('connection', (socket) => {
     // Expected data: { organizer_id, slot_start, slot_end }
     const { organizer_id, slot_start, slot_end } = data;
     const lockKey = `lock:${organizer_id}:${slot_start}:${slot_end}`;
-    try {
-      // Attempt to acquire the lock with NX flag and expire in 30 seconds
-      const result = await redisClient.set(lockKey, "locked", { NX: true, EX: 30 });
-      if (result === null) {
-        // Lock is already held – send a notification back to the client
-        socket.emit("lock_failed", { message: "Slot is currently locked by another client." });
-        return;
-      }
-      const lock_expires_at = new Date(Date.now() + 30000).toISOString();
-      const payload = { ...data, lock_expires_at };
-      // Emit the "slot_locked" event to all connected clients
-      io.emit("slot_locked", payload);
-    } catch (error) {
-      console.error("Error acquiring slot lock:", error);
-      socket.emit("error", { message: "Error acquiring slot lock" });
-    }
+    // try {
+    //   // Attempt to acquire the lock with NX flag and expire in 30 seconds
+    //   const result = await redisClient.set(lockKey, "locked", { NX: true, EX: 30 });
+    //   if (result === null) {
+    //     // Lock is already held – send a notification back to the client
+    //     socket.emit("lock_failed", { message: "Slot is currently locked by another client." });
+    //     return;
+    //   }
+    //   const lock_expires_at = new Date(Date.now() + 30000).toISOString();
+    //   const payload = { ...data, lock_expires_at };
+    //   // Emit the "slot_locked" event to all connected clients
+    //   io.emit("slot_locked", payload);
+    // } catch (error) {
+    //   console.error("Error acquiring slot lock:", error);
+    //   socket.emit("error", { message: "Error acquiring slot lock" });
+    // }
   });
 
   socket.on("disconnect", () => {
